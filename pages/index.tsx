@@ -7,7 +7,7 @@ import Layout from '../components/layout'
 const Home = () => {
   return (
     <Layout>
-        <h1>Si funciona!</h1>
+        <h1 className='text-xl font-bold'>Por fin!</h1>
     </Layout>
   )
 }
