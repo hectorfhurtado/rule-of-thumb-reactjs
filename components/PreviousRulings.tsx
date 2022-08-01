@@ -1,13 +1,15 @@
-import { useSelector } from "react-redux"
+import { useSelector, useDispatch } from "react-redux"
+import { actions } from "../slices/poll"
 import Card from "./Card"
 
 export default function PreviousRulings ()
 {
-    const data = useSelector( state => state.poll.data )
+    const data     = useSelector( state => state.poll.data )
+    const dispatch = useDispatch()
 
     function updateVote( vote: string, name: string )
     {
-        console.log( 'updateVote ', vote, name )
+        dispatch( actions.addVote({ name, vote }))
     }
 
     function renderCards()

@@ -34,7 +34,7 @@ export default function Card( props )
             setVote( null )
 
         if ( voted === false )
-            onVote( vote, props )
+            onVote( vote, name )
     }
 
     return (

@@ -78,10 +78,10 @@ export const slice = createSlice(
     initialState,
     reducers:
     {
-        // addVote( state, name: string, vote: string )
-        addVote( state, { name, vote } )
+        addVote( state, { payload })
         {
-            const person = state.data.find( person => person.name === name )
+            const { name, vote } = payload
+            const person         = state.data.find( person => person.name === name )
 
             if ( !person )
                 return
