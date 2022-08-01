@@ -11,6 +11,7 @@ export default function Card( props )
         votesPositive,
         votesNegative,
         lastUpdated,
+        layoutSelected,
         onVote,
     } = props
 
@@ -22,6 +23,8 @@ export default function Card( props )
 
     const isPositive = numericPercentagePositive > numericPercentageNegative
     const isNegative = numericPercentagePositive < numericPercentageNegative
+
+    const isListLayoutSelected = layoutSelected === 'list'
 
     const [ vote,  setVote ]  = useState( null )
     const [ voted, setVoted ] = useState( false )
@@ -46,40 +49,53 @@ export default function Card( props )
             <img 
                 alt="name" 
                 src={ `/img/${ picture }` }
-                className="pointer-none" 
+                className={[ "pointer-none", isListLayoutSelected ? 'md:absolute md:left-[-27px] xl:left-0 md:z-0 md:w-[216px] xl:w-[267] md:h-full md:object-cover md:object-left': '' ].join( ' ' )} 
                 data-testid="cardpersonimage"
                 aria-description="Voted person photo image"
             />
 
             <div 
-                className="absolute bottom-0 w-full bg-gradient-to-t from-[rgba(0,0,0,0.6)] to-[rgba(0,0,0,0.0001)]" 
+                className={[
+                    "absolute bottom-0 w-full bg-gradient-to-t from-[rgba(0,0,0,0.6)] to-[rgba(0,0,0,0.0001)]",
+                    isListLayoutSelected ? 'md:static md:z-10 md:bg-card-list-gradient xl:bg-card-list-gradient-desktop' : ''
+                ].join( ' ' )} 
             >
-                <div className="flex flex-col">
+                <div className={[ "flex flex-col", isListLayoutSelected ? 'md:flex-row md:flex-wrap' : '' ].join( ' ' )}>
                     { /* PERSON INFO */ }
-                    <div className="flex mr-[35px]">
+                    <div className={[ "flex mr-[35px]", isListLayoutSelected ? 'md:mr-0 md:shrink md:w-[calc(100%-234px)] xl:w-[calc(100%-280px)]' : '' ].join( ' ' )}>
                         <div 
-                            className={[ "bg-[#FBBD4A] w-[30px] h-[30px] flex items-center justify-center shrink-0 xl:mt-2", isPositive ? 'hidden' : '' ].join(' ') }
+                            className={[ 
+                                "bg-[#FBBD4A] w-[30px] h-[30px] flex items-center justify-center shrink-0 xl:mt-2", 
+                                isPositive ? 'hidden' : '',
+                                isListLayoutSelected ? 'xl:w-[45px] xl:h-[45px] xl:mt-0' : ''
+                            ].join(' ') }
                             data-testid="cardimagethumbicon"
                         >
                             <img
                                 src="/img/thumbs-down.svg" 
                                 alt="Thumbs down icon" 
                                 layout='fill'
+                                className={ isListLayoutSelected ? 'xl:w-[24px] xl:h-[24px]' : '' }
                             />
                         </div>
                         <div 
-                            className={[ "bg-[rgba(60,187,180,0.8)] w-[30px] h-[30px] flex items-center justify-center shrink-0 xl:mt-2", isNegative ? 'hidden' : '' ].join( ' ' )}
+                            className={[ 
+                                "bg-[rgba(60,187,180,0.8)] w-[30px] h-[30px] flex items-center justify-center shrink-0 xl:mt-2", 
+                                isNegative ? 'hidden' : '',
+                                isListLayoutSelected ? 'xl:w-[45px] xl:h-[45px] xl:mt-0' : ''
+                            ].join( ' ' )}
                             data-testid="cardimagethumbicon"
                         >
                             <img 
                                 src="/img/thumbs-up.svg" 
                                 alt="Thumbs up icon" 
                                 layout='fill'
+                                className={ isListLayoutSelected ? 'xl:w-[24px] xl:h-[24px]' : '' }
                             />
                         </div>
-                        <div className="ml-1.5">
+                        <div className={[ "ml-1.5", isListLayoutSelected ? 'md:ml-[120px] xl:ml-[214px]' : '' ].join( ' ' )}>
                             <h6 
-                                className="text-white text-3xl xl:text-[36px]" 
+                                className={[ "text-white text-3xl xl:text-[36px]", isListLayoutSelected ? 'text-[28px] xl:leading-[63px]' : '' ].join( ' ' )} 
                                 data-testid="cardname"
                                 aria-description="Name of the person voted"
                             >
@@ -87,7 +103,7 @@ export default function Card( props )
                             </h6>
 
                             <p 
-                                className="text-white mt-1.5 text-[15px] md:leading-[18px] xl:leading-[18px] text-ellipsis" 
+                                className={[ "text-white mt-1.5 text-[15px] md:leading-[18px] xl:leading-[18px] text-ellipsis", isListLayoutSelected ? 'md:mt-5 xl:mt-0 xl:text-[18px] md:leading-[16.5px] xl:leading-[21.6px]' : '' ].join( ' ' )} 
                                 data-testid="carddescription"
                                 aria-description="A short description of the person voted"
                             >
@@ -97,9 +113,9 @@ export default function Card( props )
                     </div>
 
                     {/* LAST UPDATED AND CALL TO ACTION */}
-                    <div className="mt-3 mr-[35px]">
+                    <div className={[ "mt-3 mr-[35px]", isListLayoutSelected ? 'md:mr-4 md:w-[191px] xl:w-auto md:ml-auto' : '' ].join( ' ' )}>
                         <p 
-                            className="text-white text-right text-[12px] font-bold" 
+                            className={[ "text-white text-right text-[12px] font-bold", isListLayoutSelected ? 'xl:text-[15px]' : '' ].join( ' ' )} 
                             data-testid="cardeyebrow"
                         >
                             <span className={ voted ? 'hidden' : '' }><TimeAgo date={ lastUpdated } /> in <span className="capitalize">{ category }</span></span>
@@ -111,7 +127,8 @@ export default function Card( props )
                                 className={[ 
                                     "bg-[rgba(60,187,180,0.8)] w-[30px] h-[30px] flex items-center justify-center shrink-0 border-white", 
                                     vote === 'up' ? 'border-2' : '', 
-                                    voted ? 'hidden' : '' 
+                                    voted ? 'hidden' : '',
+                                    isListLayoutSelected ? 'xl:w-[45px] xl:h-[45px]' : ''
                                 ].join( ' ' )}
                                 data-testid="cardvoteup"
                                 aria-description="Vote Up button. This enables the Vote Now button for voting"
@@ -120,6 +137,7 @@ export default function Card( props )
                                 <img 
                                     src="/img/thumbs-up.svg" 
                                     alt="Thumbs up icon" 
+                                    className={ isListLayoutSelected ? 'xl:w-[24px] xl:h-[24px]' : '' }
                                 />
                             </button>
                             <button 
@@ -127,6 +145,7 @@ export default function Card( props )
                                     "bg-[#FBBD4A] w-[30px] h-[30px] flex items-center justify-center shrink-0 border-white", 
                                     vote === 'down' ? 'border-2' : '',
                                     voted ? 'hidden' : '',
+                                    isListLayoutSelected ? 'xl:w-[45px] xl:h-[45px]' : ''
                                 ].join( ' ' )}
                                 data-testid="cardvotedown"
                                 aria-description="Vote Down button. This enables the Vote Now button for voting"
@@ -135,6 +154,7 @@ export default function Card( props )
                                 <img   
                                     src="/img/thumbs-down.svg" 
                                     alt="Thumbs down icon" 
+                                    className={ isListLayoutSelected ? 'xl:w-[24px] xl:h-[24px]' : '' }
                                 />
                             </button>
                             <button 
@@ -157,7 +177,7 @@ export default function Card( props )
                     </div>
 
                     {/* POLL STATISTICS */}
-                    <div className="mt-3 h-[36px] relative flex w-full" data-testid="cardgauge">
+                    <div className={[ "mt-3 h-[36px] relative flex w-full", isListLayoutSelected ? 'md:mt-5' : '' ].join( ' ' )} data-testid="cardgauge">
                         <div 
                             className="bg-[rgba(60,187,180,0.6)] w-full h-full" 
                             style={{ maxWidth: numericPercentagePositive + '%' }}
@@ -171,9 +191,10 @@ export default function Card( props )
                             <img 
                                 src="/img/thumbs-up.svg" 
                                 alt="Thumbs up icon" 
+                                className={ isListLayoutSelected ? 'xl:w-[22.5px] xl:h-[22.5px]' : '' }
                             />
                             <p 
-                                className="text-white text-lg ml-1.5" 
+                                className={[ "text-white text-lg ml-1.5", isListLayoutSelected ? 'xl:text-[27px]' : '' ].join( ' ' )} 
                                 aria-description="Percentage of overall positive votes"
                             >
                                 { numericPercentagePositive.toFixed( 1 )}%
@@ -181,7 +202,7 @@ export default function Card( props )
                         </div>
                         <div className="absolute right-3.5 top-1.5 xl:top-0.5 flex items-center">
                             <p 
-                                className="text-white text-lg mr-1.5" 
+                                className={[ "text-white text-lg mr-1.5", isListLayoutSelected ? 'xl:text-[27px]' : '' ].join( ' ' )} 
                                 aria-description="Percentage of overall negative votes"
                             >
                                 { numericPercentageNegative.toFixed( 1 )}%
@@ -190,6 +211,7 @@ export default function Card( props )
                             <img 
                                 src="/img/thumbs-down.svg" 
                                 alt="Thumbs down icon" 
+                                className={ isListLayoutSelected ? 'xl:w-[22.5px] xl:h-[22.5px]' : '' }
                             />
                         </div>
                     </div>
