@@ -5,6 +5,11 @@ export default function PreviousRulings ()
 {
     const data = useSelector( state => state.poll.data )
 
+    function updateVote( vote: string, name: string )
+    {
+        console.log( 'updateVote ', vote, name )
+    }
+
     function renderCards()
     {
         return data.map( cardData =>
@@ -17,6 +22,8 @@ export default function PreviousRulings ()
                         category={ cardData.category }
                         votesPositive={ cardData.votes.positive }
                         votesNegative={ cardData.votes.negative }
+                        lastUpdated={ cardData.lastUpdated }
+                        onVote={ updateVote }
                     />
             })
     }

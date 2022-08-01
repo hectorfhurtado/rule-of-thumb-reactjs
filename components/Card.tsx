@@ -1,4 +1,5 @@
-import Image from 'next/image'
+import { useState } from "react"
+import TimeAgo from 'react-timeago'
 
 export default function Card( props )
 {
@@ -9,10 +10,32 @@ export default function Card( props )
         picture, 
         votesPositive,
         votesNegative,
+        lastUpdated,
+        onVote,
     } = props
 
     const calculatePositive = () => ( votesPositive / ( votesPositive + votesNegative )) * 100
     const calculateNegative = () => ( votesNegative / ( votesPositive + votesNegative )) * 100
+
+    const numericPercentagePositive = calculatePositive()
+    const numericPercentageNegative = calculateNegative()
+
+    const isPositive = numericPercentagePositive > numericPercentageNegative
+    const isNegative = numericPercentagePositive < numericPercentageNegative
+
+    const [ vote,  setVote ]  = useState( null )
+    const [ voted, setVoted ] = useState( false )
+
+    function voteAction()
+    {
+        setVoted( !voted )
+
+        if ( voted )
+            setVote( null )
+
+        if ( voted === false )
+            onVote( vote, props )
+    }
 
     return (
         <div 
@@ -35,7 +58,7 @@ export default function Card( props )
                     { /* PERSON INFO */ }
                     <div className="flex mr-[35px]">
                         <div 
-                            className="bg-[#FBBD4A] w-[30px] h-[30px] flex items-center justify-center shrink-0 xl:mt-2"
+                            className={[ "bg-[#FBBD4A] w-[30px] h-[30px] flex items-center justify-center shrink-0 xl:mt-2", isPositive ? 'hidden' : '' ].join(' ') }
                             data-testid="cardimagethumbicon"
                         >
                             <img
@@ -45,7 +68,7 @@ export default function Card( props )
                             />
                         </div>
                         <div 
-                            className="bg-[rgba(60,187,180,0.8)] w-[30px] h-[30px] flex items-center justify-center shrink-0 xl:mt-2"
+                            className={[ "bg-[rgba(60,187,180,0.8)] w-[30px] h-[30px] flex items-center justify-center shrink-0 xl:mt-2", isNegative ? 'hidden' : '' ].join( ' ' )}
                             data-testid="cardimagethumbicon"
                         >
                             <img 
@@ -79,15 +102,20 @@ export default function Card( props )
                             className="text-white text-right text-[12px] font-bold" 
                             data-testid="cardeyebrow"
                         >
-                            <span>TODO in <span className="capitalize">{ category }</span></span>
-                            <span className='hidden'>Thank you for voting!</span>
+                            <span className={ voted ? 'hidden' : '' }><TimeAgo date={ lastUpdated } /> in <span className="capitalize">{ category }</span></span>
+                            <span className={ voted ? '' : 'hidden' }>Thank you for voting!</span>
                         </p>
                         
                         <div className="flex justify-end gap-[12px] items-center mt-3">
                             <button 
-                                className="bg-[rgba(60,187,180,0.8)] w-[30px] h-[30px] flex items-center justify-center shrink-0 border-white"
+                                className={[ 
+                                    "bg-[rgba(60,187,180,0.8)] w-[30px] h-[30px] flex items-center justify-center shrink-0 border-white", 
+                                    vote === 'up' ? 'border-2' : '', 
+                                    voted ? 'hidden' : '' 
+                                ].join( ' ' )}
                                 data-testid="cardvoteup"
                                 aria-description="Vote Up button. This enables the Vote Now button for voting"
+                                onClick={ () => setVote( 'up' )}
                             >
                                 <img 
                                     src="/img/thumbs-up.svg" 
@@ -95,9 +123,14 @@ export default function Card( props )
                                 />
                             </button>
                             <button 
-                                className="bg-[#FBBD4A] w-[30px] h-[30px] flex items-center justify-center shrink-0 border-white"
+                                className={[ 
+                                    "bg-[#FBBD4A] w-[30px] h-[30px] flex items-center justify-center shrink-0 border-white", 
+                                    vote === 'down' ? 'border-2' : '',
+                                    voted ? 'hidden' : '',
+                                ].join( ' ' )}
                                 data-testid="cardvotedown"
                                 aria-description="Vote Down button. This enables the Vote Now button for voting"
+                                onClick={() => setVote( 'down' )}
                             >
                                 <img   
                                     src="/img/thumbs-down.svg" 
@@ -113,10 +146,12 @@ export default function Card( props )
                                     bg-[rgba(48,48,48,0.6)] hover:bg-[rgba(0,0,0,0.6)] disabled:bg-[rgba(0,0,0,0.6)] 
                                     border border-white
                                 "
+                                disabled={ vote === null }
                                 data-testid="cardvotenow"
                                 aria-description="Vote Now button. Disabled by default, it's enabled when clicking on Vote up or Down button. Then you can Vote. After voting, you can Vote again clicking this button in order to reset all values." 
+                                onClick={ voteAction }
                             >
-                                Vote Now
+                                Vote { voted ? 'Again' : 'Now' }
                             </button>
                         </div>
                     </div>
@@ -125,11 +160,11 @@ export default function Card( props )
                     <div className="mt-3 h-[36px] relative flex w-full" data-testid="cardgauge">
                         <div 
                             className="bg-[rgba(60,187,180,0.6)] w-full h-full" 
-                            style={{ maxWidth: calculatePositive() + '%' }}
+                            style={{ maxWidth: numericPercentagePositive + '%' }}
                         ></div>
                         <div 
                             className="bg-[rgba(249,173,29,0.6)] w-full h-full" 
-                            style={{ maxWidth: calculateNegative() + '%' }}
+                            style={{ maxWidth: numericPercentageNegative + '%' }}
                         ></div>
 
                         <div className="absolute left-3.5 top-1.5 xl:top-0.5 flex items-center">
@@ -141,7 +176,7 @@ export default function Card( props )
                                 className="text-white text-lg ml-1.5" 
                                 aria-description="Percentage of overall positive votes"
                             >
-                                { calculatePositive().toFixed( 1 )}%
+                                { numericPercentagePositive.toFixed( 1 )}%
                             </p>
                         </div>
                         <div className="absolute right-3.5 top-1.5 xl:top-0.5 flex items-center">
@@ -149,7 +184,7 @@ export default function Card( props )
                                 className="text-white text-lg mr-1.5" 
                                 aria-description="Percentage of overall negative votes"
                             >
-                                { calculateNegative().toFixed( 1 )}%
+                                { numericPercentageNegative.toFixed( 1 )}%
                             </p>
                             
                             <img 
