@@ -36,7 +36,7 @@ export default function PreviousRulings ()
     return (
         <div>
             <div className="flex justify-between items-center">
-                <h3 className="text-gray-600 text-[28px] md:text-[24px] md:leading-[28.8px] xl:text-[45px] font-light leading-7">Previous Rulings</h3>
+                <h3 className="text-gray-600 text-[28px] md:text-[24px] md:leading-[28.8px] xl:text-[45px] font-light leading-7" data-testid="previewtitle">Previous Rulings</h3>
 
                 <div className="hidden md:block relative">
                     <img 
